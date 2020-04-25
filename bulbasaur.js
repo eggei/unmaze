@@ -25,7 +25,10 @@ module.exports = {
         details: {
           is_hidden: true,
           slot: 3,
-          base_experience: 64,
+          base_experience: {
+            name: 'exp',
+            level: 64,
+          },
         },
       },
     },

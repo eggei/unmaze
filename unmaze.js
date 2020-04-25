@@ -1,11 +1,13 @@
 const poke = require('./bulbasaur')
+const Helpers = require('./helpers')
 
 function unmaze(obj) {
   return new Unmaze(obj)
 }
 
-class Unmaze {
+class Unmaze extends Helpers {
   constructor(obj) {
+    super()
     this._obj = { ...obj }
     this._path = null
     this._key = null
@@ -38,7 +40,10 @@ class Unmaze {
   of(prop) {
     const parent = this.getValueOf(prop, this.obj)
     this._value = parent[this.key]
-    this._path = this.getPathTo(prop, this.obj)
+    this._path = [
+      ...this.getPathTo(prop, this.obj),
+      this._path[this._path.length - 1],
+    ]
     return this
   }
 
@@ -55,74 +60,11 @@ class Unmaze {
     // return ref
     console.log('this.value', this.value)
     console.log('val', val)
-    
+    console.log('path', path)
+    // CREATE THE SETTER FOR SYNTAX: o.get('something').set = 'new value'
+    // for (let i; i < this._path.length; i++) {}
+    // this._obj[0][1][2][3][4][5] = value
     this._value = val
-  }
-
-  // Get all the paths in the given object as strings array
-  // eg. ["objA.objB.objC.field", "obj.objA.field"]
-  getAllPaths(o, p) {
-    const keys = Object.keys(o)
-    const prefix = p ? `${p}.` : ''
-
-    return keys.reduce((result, key) => {
-      let accPath = result
-      if (this.isObject(o[key])) {
-        accPath = accPath.concat(this.getAllPaths(o[key], prefix + key))
-      } else {
-        accPath.push(prefix + key)
-      }
-      return accPath
-    }, [])
-  }
-
-  getPathTo(field, obj) {
-    // Throw error for wrong arguments
-    if (!this.isObject(obj) || arguments.length !== 2) {
-      throw new Error(
-        `Bad arguments to "getPathTo" - Arguments passed: ${field}, ${obj}`,
-      )
-    }
-
-    const paths = this.getAllPaths(obj)
-
-    // Find the path contains given field
-    const containingPath = paths.filter((path) =>
-      path.split('.').includes(field),
-    )[0]
-
-    // Throw error if the path doesn't exist
-    if (!containingPath) {
-      throw new Error(
-        `[Error occured in function "getPathTo"] >>> "${field}" <<< does not exist in object.`,
-      )
-    }
-
-    // Slice the wanted part of containing path
-    const sliceIndex =
-      containingPath.split('.').findIndex((el) => el === field) + 1
-    const result = containingPath.split('.').slice(0, sliceIndex)
-    return result
-  }
-
-  getValueOf(field, obj) {
-    const path = this.getPathTo(field, obj)
-    const value = path.reduce((acc, key) => {
-      return acc && Object.prototype.hasOwnProperty.call(acc, key)
-        ? acc[key]
-        : 'does not exist'
-    }, obj)
-    if (value === 'does not exist') {
-      throw new Error(
-        `[Error occured in function "getValueOf"] >>> "${field}" <<< does not exist in object.`,
-      )
-    } else {
-      return value
-    }
-  }
-
-  isObject(x) {
-    return Object.prototype.toString.call(x) === '[object Object]'
   }
 }
 
@@ -137,5 +79,5 @@ o.version_group_details.move_learn_method.url = "ege.com";
 // console.log(o.get('slot').in("details").path)
 // console.log(o.get('slot').of('details').value)
 
-console.log(o.get('name').set = 'Ege')
-console.log(o.get('name').value)
+console.log(o.get('name').in('base_experience').path)
+console.log(o.get('name').in('move').value)
