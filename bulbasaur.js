@@ -33,4 +33,5 @@ module.exports = {
       },
     },
   },
+  extra: { interests: 'hello' }
 }
