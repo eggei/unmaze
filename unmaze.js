@@ -16,6 +16,7 @@ class Unmaze extends Helpers {
     this.path = null
     this.key = null
     this.value = null
+    this.ofChainCount = 0
   }
 
   get obj() {
@@ -31,11 +32,12 @@ class Unmaze extends Helpers {
   }
 
   of(key) {
+    ++this.ofChainCount
     const parent = this.getValueOf(key, this.obj)
     this.value = parent[this.key]
     this.path = [
       ...this.getPathTo(key, this.obj),
-      this.path[this.path.length - 1],
+      ...this.path.reverse().slice(0, this.ofChainCount).reverse()
     ]
     return this
   }
@@ -59,11 +61,31 @@ class Unmaze extends Helpers {
     eval(assignValueToProp)
   }
 }
+// TODO: Create a method that gives user the ability to use value of path and also set it.
+// Something like: 
+// o.get('someKey').use((val, set) => {
+//    const newVal = val.map(...)     
+//    set(newVal)
+// })
 
 // Initialize the object wrapped with unmaze
 const o = unmaze(poke)
 
-o.get('is_hidden').in('details').set = [1, 'ege', false, null, { success: undefined }]
+// Instead of 
+// obj['version_group_details']['move_learn_method']['version_group']['details']['is_hidden'] = false
+// Use this:
+o.get('level').set = 10454545
 console.log(o.path)
 console.log(JSON.stringify(o.obj, null, 3))
-console.log('new value: ____________', o.get('is_hidden').in('details').value) 
+console.log('new value: ____________', o.get('level').value) 
+
+
+
+
+
+
+
+
+
+
+
