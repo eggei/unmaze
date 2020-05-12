@@ -20,7 +20,6 @@ class Unmaze extends Helpers {
   }
 
   get obj() {
-    console.log('getting internal object')
     return this.getInternalObj()
   }
 
@@ -32,6 +31,7 @@ class Unmaze extends Helpers {
   }
 
   of(key) {
+    // count .of() chain to make sure this.path includes the steps added by chained .of() methods
     ++this.ofChainCount
     const parent = this.getValueOf(key, this.obj)
     this.value = parent[this.key]
@@ -71,9 +71,6 @@ class Unmaze extends Helpers {
 // Initialize the object wrapped with unmaze
 const o = unmaze(poke)
 
-// Instead of 
-// obj['version_group_details']['move_learn_method']['version_group']['details']['is_hidden'] = false
-// Use this:
 o.get('level').set = 10454545
 console.log(o.path)
 console.log(JSON.stringify(o.obj, null, 3))
